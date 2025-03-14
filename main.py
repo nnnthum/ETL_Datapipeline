@@ -1,26 +1,3 @@
-# import mysql.connector
-# import os
-
-# # ดึงตัวแปร env จาก docker-compose.yml
-# host = os.getenv('MYSQL_HOST', 'localhost')
-# user = os.getenv('MYSQL_USER', 'root')
-# password = os.getenv('MYSQL_PASSWORD', 'root')
-# database = os.getenv('MYSQL_DB', 'sales_db')
-
-# # เชื่อมต่อ MySQL
-# try:
-#     conn = mysql.connector.connect(
-#         host=host,
-#         user=user,
-#         password=password,
-#         database=database
-#     )
-#     print("✅ Connected to MySQL database!")
-# except mysql.connector.Error as err:
-#     print(f"❌ Error: {err}")
-#---> จำลอง และ setting docker
-
-
 import pandas as pd
 import mysql.connector
 import os
