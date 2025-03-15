@@ -1,50 +1,39 @@
 import pandas as pd
-import mysql.connector
 import os
+import logging
+from db_utils import get_connection, create_table
 
-# Extract: ดึงข้อมูลจากไฟล์ CSV
+# ตั้งค่าระบบ log
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 def extract(csv_file):
-    print(f"Extracting data from {csv_file}")
-    data = pd.read_csv(csv_file)
-    return data
+    logging.info(f"📤 Extracting data from {csv_file}")
+    return pd.read_csv(csv_file)
 
-# Transform: แปลงข้อมูลให้อยู่ในรูปแบบที่ต้องการ
 def transform(data):
-    print("Transforming data...")
+    logging.info("🔄 Transforming data...")
     data['sale_date'] = pd.to_datetime(data['sale_date'])
     data['total_price'] = data['price'] * data['quantity']
     return data
 
-# Load: โหลดข้อมูลเข้า MySQL
-def load(data, db_config):
-    print("Loading data into MySQL...")
-    conn = mysql.connector.connect(**db_config)
+def load(data):
+    logging.info("📥 Loading data into MySQL...")
+    conn = get_connection()
     cursor = conn.cursor()
 
-    for _, row in data.iterrows():
-        cursor.execute('''
+    cursor.executemany('''
         INSERT INTO sales (product_name, price, quantity, sale_date, total_price)
         VALUES (%s, %s, %s, %s, %s)
-        ''', (row['product_name'], row['price'], row['quantity'], row['sale_date'], row['total_price']))
+    ''', data[['product_name', 'price', 'quantity', 'sale_date', 'total_price']].values.tolist())
 
     conn.commit()
     cursor.close()
     conn.close()
-    print("Data successfully loaded!")
+    logging.info("✅ Data successfully loaded!")
 
-# Config การเชื่อมต่อ MySQL
-db_config = {
-    'host': os.getenv('MYSQL_HOST', 'localhost'),
-    'user': os.getenv('MYSQL_USER', 'user'),
-    'password': os.getenv('MYSQL_PASSWORD', 'password'),
-    'database': os.getenv('MYSQL_DB', 'sales_db')
-}
-
-# ไฟล์ CSV ที่ใช้
-csv_file = 'data/sales_data.csv'
-
-# ETL Pipeline
 if __name__ == "__main__":
-    data = extract(csv_file)
-    transformed_data = transform(data)
-    load(transformed_data, db_config)
+    logging.info("🚀 Starting ETL Pipeline")
+    create_table()  # สร้างตารางก่อนโหลดข้อมูล
+    data = transform(extract('data/sales_data.csv'))
+    load(data)
+    logging.info("🎉 ETL Pipeline Completed Successfully")

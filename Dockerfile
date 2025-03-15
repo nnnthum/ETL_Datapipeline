@@ -1,17 +1,14 @@
-# ใช้ Python เวอร์ชัน 3.9
+# ใช้ Python เวอร์ชันล่าสุด (Slim ลดขนาด Image)
 FROM python:3.9-slim
 
-# ตั้งค่า working directory ใน container
 WORKDIR /app
 
-# คัดลอกไฟล์ requirements.txt เข้า container
-COPY requirements.txt requirements.txt
+# คัดลอก dependencies และติดตั้งก่อน
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# ติดตั้ง dependencies
-RUN pip install -r requirements.txt
-
-# คัดลอกโค้ดทั้งหมดเข้า container
+# คัดลอกโค้ดทั้งหมดลง Container
 COPY . .
 
-# รัน main.py เมื่อ container เริ่มทำงาน
-CMD ["python", "main.py"]
+# กำหนดให้ใช้ python3 เป็นค่าเริ่มต้น
+CMD ["python3", "main.py"]
