@@ -32,7 +32,7 @@ def load(data):
     logging.info("✅ Data successfully loaded!")
 
 if __name__ == "__main__":
-    logging.info("🚀 Starting ETL Pipeline")
+    logging.info("Starting ETL Pipeline")
     create_table()  # สร้างตารางก่อนโหลดข้อมูล
     data = transform(extract('data/sales_data.csv'))
     load(data)
