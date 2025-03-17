@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 def get_connection():
     """เชื่อมต่อ MySQL และคืนค่า connection object"""
-    logging.info("🔗 Connecting to MySQL database...")
+    logging.info(" Connecting to MySQL database...")
     return mysql.connector.connect(
         host=os.getenv('MYSQL_HOST', 'mysql'),
         user=os.getenv('MYSQL_USER', 'user'),
@@ -16,7 +16,7 @@ def get_connection():
 
 def create_table():
     """สร้างตาราง sales ถ้ายังไม่มี"""
-    logging.info("🛠 Creating table if not exists...")
+    logging.info("🛠Creating table if not exists...")
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
@@ -32,4 +32,4 @@ def create_table():
     conn.commit()
     cursor.close()
     conn.close()
-    logging.info("✅ Table check completed!")
+    logging.info("Table check completed!")
