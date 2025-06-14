@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 def get_connection():
     """เชื่อมต่อ MySQL และคืนค่า connection object"""
     logging.info(" Connecting to MySQL database...")
+
     return mysql.connector.connect(
         host=os.getenv('MYSQL_HOST', 'mysql'),
         user=os.getenv('MYSQL_USER', 'user'),
@@ -33,3 +34,17 @@ def create_table():
     cursor.close()
     conn.close()
     logging.info("Table check completed!")
+
+
+def insert_table(data, columns):
+    logging.info("🛠inserting table if not exists...")
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.executemany('''
+        INSERT INTO sales (product_name, price, quantity, sale_date, total_price)
+        VALUES (%s, %s, %s, %s, %s)
+    ''', data[['product_name', 'price', 'quantity', 'sale_date', 'total_price']].values.tolist())
+
+    return
