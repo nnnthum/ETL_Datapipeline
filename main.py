@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import logging
-from db_utils import get_connection, create_table
+from db_utils import get_connection, create_table, insert_table
 
 #  log setting
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -21,10 +21,16 @@ def load(data):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.executemany('''
-        INSERT INTO sales (product_name, price, quantity, sale_date, total_price)
-        VALUES (%s, %s, %s, %s, %s)
-    ''', data[['product_name', 'price', 'quantity', 'sale_date', 'total_price']].values.tolist())
+    data_ingest = {
+        'product_name': data['product_name'].tolist(),
+        'price': data['price'].tolist(),
+        'quantity': data['quantity'].tolist(),
+        'sale_date': data['sale_date'].dt.strftime('%Y-%m-%d').tolist(),  # Convert to string for MySQL
+        'total_price': data['total_price'].tolist()
+    }
+
+    # จะ insert แต่ เขียน query ในนี้ เลยทำเห้ไร
+    insert_table(data_ingest)
 
     conn.commit()
     cursor.close()
